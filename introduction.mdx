@@ -1,71 +1,33 @@
 ---
 title: Introduction
-description: 'Welcome to the home of your new documentation'
+description: 'Meeting agents documentation'
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.svg"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.svg"
-  alt="Hero Dark"
-/>
+## Overview
 
-## Setting up
+Record meetings, stream audio and video, generate transcripts, and so much more.
 
-The first step to world-class documentation is setting up your editing environments.
+## What is an agent?
 
-<CardGroup cols={2}>
-  <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
-  >
-    Get your docs set up locally for easy development
-  </Card>
-  <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
-  >
-    Preview your changes before you push to make sure they're perfect
-  </Card>
-</CardGroup>
+An agent is the fundamental entity for accessing a given meeting's data.
 
-## Make it yours
+Through an agent, you can interface with a meeting's video, audio, participants, and metadata in real-time during a call, as well as after the call for as long as the data is retained.
 
-Update your docs to your brand and add valuable content for the best user conversion.
+## Video and audio
 
-<CardGroup cols={2}>
-  <Card
-    title="Customize Style"
-    icon="palette"
-    href="https://mintlify.com/docs/settings/global"
-  >
-    Customize your docs to your company's colors and brands
-  </Card>
-  <Card
-    title="Reference APIs"
-    icon="code"
-    href="https://mintlify.com/docs/api-playground/openapi"
-  >
-    Automatically generate endpoints from an OpenAPI spec
-  </Card>
-  <Card
-    title="Add Components"
-    icon="screwdriver-wrench"
-    href="https://mintlify.com/docs/components/accordion"
-  >
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card
-    title="Get Inspiration"
-    icon="stars"
-    href="https://mintlify.com/customers"
-  >
-    Check out our showcase of our favorite documentation
-  </Card>
-</CardGroup>
+Meeting agents generate a recording that can be accessed in the videoUrl field of the agent when fetched from Retrieve agent. The field will contain a pre-signed S3 URL that you can use to play the video and processed accordingly.
+
+## Transcription
+
+There are two ways to generate transcripts:
+
+- **Meeting Caption Transcription:** Using the meeting platform's native closed captioning feature to generate a transcript in real-time.
+- **AI Transcription:** Using a 3rd party AI transcription integration.
+Which of these you choose depends on your requirements, and we recommend reviewing the documentation for each to decide which best fits your use case.
+
+## Customizing your agents
+
+Meeting agents are fully white label-able to match your branding:
+
+- **Output an Image:** Configure your agents to output a custom image.
+- **Set the name for your agents:** Change the name of your agents by providing an agent_name parameter in the Create agent request.

@@ -1,0 +1,178 @@
+---
+title: 'Sending a agent'
+description: 'Learn how to send AI agents to meetings through the Meeting agent API, with options for immediate or scheduled joining and customizable settings.'
+icon: 'code'
+---
+
+## 1. Create a meeting
+We recommend using Google Meet for this quickstart. After you create the meeting, stay in the meeting you created, and save the meeting URL for the next step.
+
+## 2. Send a agent to the meeting
+
+You can dispatch an agent to a meeting either:
+    1. Immediately, provided there are available agents in your pool.
+    2. With a reservation, scheduling an agent to join 5 minutes before a meeting.
+
+To send an agent to a meeting, use the following example POST request to https://your-company-domain/api/v1/agent/join
+
+<Tip>
+Note: The response will include an Agent ID. Be sure to save this ID
+for use in further steps.
+</Tip>
+
+<Tabs>
+  <Tab label="JavaScript" title="JavaScript">
+
+  ```javascript
+  fetch("https://your-company-domain/api/v1/agent/join", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${YOUR_API_KEY}`
+      },
+      body: JSON.stringify({
+          meetingUrl: 'YOUR-MEETING-URL',
+          agentName: 'Meeting Agent',
+          adhoc: true,
+          agentImage: "YOUR-IMAGE_URL",
+          entryMessage: "Hello, I am here to assist you :)",
+          speechToText: {
+              provider: "Default"
+          },
+          automaticLeave: {
+              EveryoneLeftTimeout: 60, // seconds
+              NoOneJoinedTimeout: 900,
+              WaitingRoomTimeout: 900
+          },
+          webhookUrl: "YOUR-WEBHOOK_URL",
+          metadata: { customKey: "value" }
+      })
+  }).then(response => response.json())
+  .then(data => console.log(data.agentId))
+  .catch((error) => console.error("Error:", error));
+  ```
+
+  </Tab>
+
+  <Tab label="cURL" title="Bash">
+
+  ```bash
+  curl -X POST "https://your-company-domain/api/v1/agent/join" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Token YOUR_API_KEY" \
+  -d '{
+      "meetingUrl": "YOUR-MEETING-URL",
+      "agentName": "Meeting Agent",
+      "adhoc": true,
+      "agentImage": "YOUR-IMAGE_URL",
+      "entryMessage": "Hello, I am here to assist you :)",
+      "speechToText": {
+          "provider": "Default"
+      },
+      "automaticLeave": {
+          "EveryoneLeftTimeout": 60,
+          "NoOneJoinedTimeout": 900,
+          "WaitingRoomTimeout": 900
+      },
+      "webhookUrl": "YOUR-WEBHOOK_URL",
+      "metadata": { "customKey": "value" }
+  }'
+  ```
+
+  </Tab>
+
+  <Tab label="Python" title="Python">
+
+  ```python
+  import requests
+
+  url = "https://your-company-domain/api/v1/agent/join"
+  headers = {
+      "Content-Type": "application/json",
+      "Authorization": f"Token {YOUR_API_KEY}"
+  }
+  payload = {
+      "meetingUrl": "YOUR-MEETING-URL",
+      "agentName": "Meeting Agent",
+      "adhoc": True,
+      "agentImage": "YOUR-IMAGE_URL",
+      "entryMessage": "Hello, I am here to assist you :)",
+      "speechToText": {
+          "provider": "Default"
+      },
+      "automaticLeave": {
+          "EveryoneLeftTimeout": 60,
+          "NoOneJoinedTimeout": 900,
+          "WaitingRoomTimeout": 900
+      },
+      "webhookUrl": "YOUR-WEBHOOK_URL",
+      "metadata": { "customKey": "value" }
+  }
+
+  response = requests.post(url, json=payload, headers=headers)
+  print(response.json().get("agentId"))
+  ```
+
+  </Tab>
+</Tabs>
+
+### Breaking It Down:
+
+<ResponseField name="meetingUrl" type="string" required>
+  **Description**: The URL of the meeting the agent should join.  
+  **Supported Platforms**: Google Meet, Microsoft Teams, Zoom.
+</ResponseField>
+
+<ResponseField name="agentName" type="string" required>
+  **Description**: The display name for the agent in the meeting.
+</ResponseField>
+
+<ResponseField name="adhoc" type="boolean" required>
+  **Description**: Determines whether to dispatch an agent immediately or reserve it in advance.
+
+  - **`true`**: Dispatches an agent immediately from the pool of always-ready agents.  
+    *Note*: During high demand, there may be a delay.
+  
+  - **`false`**: Reserves an agent in advance, ensuring it joins exactly 5 minutes before a scheduled meeting.  
+    *Ideal for planned calendar events to guarantee agent availability.*
+</ResponseField>
+
+<ResponseField name="agentImage" type="string" optional>
+  **Description**: The URL of the image the agent will display. Must be a valid URI format.     
+  **Optional**: Yes
+</ResponseField>
+
+<ResponseField name="entryMessage" type="string" optional>
+  **Description**: A message that the agent sends within 10 seconds of joining the meeting.   
+  **Optional**: Yes
+</ResponseField>
+
+<ResponseField name="speechToText" type="object" optional>
+  **Description**: If not provided, no transcription will be generated.      
+  **Optional**: Yes
+
+  Must be an object with:
+  
+  - **provider**: One of:
+    - `"Default"`: Standard transcription, no API key needed.
+    - `"Deepgram"` or `"RevAI"`: Requires their respective API key to be provided.
+  
+  - **apiKey**: Required when using Deepgram or RevAI providers. Must be a valid API key from the respective service.
+</ResponseField>
+
+<ResponseField name="automaticLeave" type="object" optional>
+  **Description**: Controls the agent’s behavior when leaving a call. You can configure the `automaticLeave` object when calling `Create Agent`.     
+  **Optional**: Yes
+</ResponseField>
+
+<ResponseField name="webhookUrl" type="string" optional>
+  **Description**: A URL to receive live and post-meeting events.     
+  **Optional**: Yes
+</ResponseField>
+
+<ResponseField name="metadata" type="object" optional>
+  **Description**: Custom key-value pairs attached to the agent.     
+  **Optional**: Yes
+
+  *Usage*: Useful for custom logic or tracking, as this data can be retrieved later.
+</ResponseField>
