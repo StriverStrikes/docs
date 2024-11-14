@@ -123,7 +123,7 @@ const agentId = 'YOUR-AGENT-ID'; // Replace with your Agent ID
 fetch(`https://your-company-domain/api/v1/agent/meeting-data?agentId=${agentId}`, {
     method: 'GET',
     headers: {
-        'Authorization': `Token ${YOUR_API_KEY}`
+        'Authorization': `Bearer ${YOUR_API_KEY}`
     }
 })
 .then(response => response.json())

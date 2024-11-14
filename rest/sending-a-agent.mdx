@@ -28,7 +28,7 @@ for use in further steps.
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Token ${YOUR_API_KEY}`
+          'Authorization': `Bearer ${YOUR_API_KEY}`
       },
       body: JSON.stringify({
           meetingUrl: 'YOUR-MEETING-URL',
@@ -59,7 +59,7 @@ for use in further steps.
   ```bash
   curl -X POST "https://your-company-domain/api/v1/agent/join" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Token YOUR_API_KEY" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -d '{
       "meetingUrl": "YOUR-MEETING-URL",
       "agentName": "Meeting Agent",
@@ -89,7 +89,7 @@ for use in further steps.
   url = "https://your-company-domain/api/v1/agent/join"
   headers = {
       "Content-Type": "application/json",
-      "Authorization": f"Token {YOUR_API_KEY}"
+      "Authorization": f"Bearer {YOUR_API_KEY}"
   }
   payload = {
       "meetingUrl": "YOUR-MEETING-URL",
@@ -176,3 +176,9 @@ for use in further steps.
 
   *Usage*: Useful for custom logic or tracking, as this data can be retrieved later.
 </ResponseField>
+
+## 4. Talk for a little bit
+While you and the agent are in the meeting, make sure to turn on your video or talk for a little bit. This way, there will be actual content in the video recording the agent produces for you to look at after.
+
+## 5. End the meeting
+Once you feel like there is enough content in the meeting, end the meeting. The agent will automatically leave.

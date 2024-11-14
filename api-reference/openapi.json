@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "Meeting Agent API",
+    "description": "API for managing meeting agents, allowing them to join meetings with customizable configurations and fetch meeting data.",
     "license": {
       "name": "MIT"
     },
@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://your-company-domain/api/v1"
     }
   ],
   "security": [
@@ -19,54 +19,15 @@
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/agent/join": {
       "post": {
-        "description": "Creates a new plant in the store",
+        "description": "Joins a meeting with a customizable agent.",
         "requestBody": {
-          "description": "Plant to add to the store",
+          "description": "Details of the meeting agent joining the session.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/JoinRequest"
               }
             }
           },
@@ -74,17 +35,27 @@
         },
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "Agent successfully joined the meeting",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/JoinResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Invalid request or missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access, invalid API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -96,28 +67,43 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/agent/meeting-data": {
+      "get": {
+        "description": "Fetches meeting data for a specific agent by agentId.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
+            "name": "agentId",
+            "in": "query",
+            "description": "The ID of the agent whose meeting data is being fetched",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
+          "200": {
+            "description": "Meeting data successfully fetched for the agent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetingDataResponse"
+                }
+              }
+            }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Invalid request or missing agentId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access, invalid API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -132,57 +118,143 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "JoinRequest": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "meetingUrl": {
+            "type": "string",
+            "description": "URL of the meeting the agent will join"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "agentName": {
+            "type": "string",
+            "description": "Name of the meeting agent"
+          },
+          "adhoc": {
+            "type": "boolean",
+            "description": "Indicates if the agent should join as an ad-hoc participant"
+          },
+          "agentImage": {
+            "type": "string",
+            "description": "URL to the agent's image"
+          },
+          "entryMessage": {
+            "type": "string",
+            "description": "Message the agent will send upon joining"
+          },
+          "speechToText": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "description": "The speech-to-text provider to use"
+              },
+              "apiKey": {
+                "type": "string",
+                "description": "The apiKey of the speech-to-text provider"
+              }
+            }
+          },
+          "automaticLeave": {
+            "type": "object",
+            "properties": {
+              "EveryoneLeftTimeout": {
+                "type": "integer",
+                "description": "Time (in seconds) to wait before the agent leaves if everyone has left"
+              },
+              "NoOneJoinedTimeout": {
+                "type": "integer",
+                "description": "Time (in seconds) to wait before the agent leaves if no one has joined"
+              },
+              "WaitingRoomTimeout": {
+                "type": "integer",
+                "description": "Time (in seconds) to wait before the agent leaves if waiting in the room"
+              }
+            }
+          },
+          "webhookUrl": {
+            "type": "string",
+            "description": "Webhook URL to send meeting updates"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Custom metadata that can be included with the request",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "meetingUrl",
+          "agentName",
+          "adhoc"
+        ]
+      },
+      "JoinResponse": {
+        "type": "object",
+        "properties": {
+          "agentId": {
+            "type": "string",
+            "description": "Unique identifier of the agent that joined the meeting"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "MeetingDataResponse": {
+        "type": "object",
+        "properties": {
+          "agentId": {
+            "type": "string",
+            "description": "The agentId"
           },
-          {
-            "required": [
-              "id"
-            ],
+          "videoUrl": {
+            "type": "string",
+            "description": "The video url of the recording."
+          },
+          "transcription": {
             "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
+            "description": "The transcription of the meeting."
+          },
+          "meetingUrl": {
+            "type": "string",
+            "description": "The URL of the meeting"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Participant's name"
+            },
+            "description": "List of participants in the meeting"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the meeting (e.g., ongoing, completed)"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start time of the meeting"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End time of the meeting"
           }
-        ]
+        }
       },
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
         "type": "object",
         "properties": {
           "error": {
             "type": "integer",
-            "format": "int32"
+            "description": "Error code"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Error message"
           }
-        }
+        },
+        "required": [
+          "error",
+          "message"
+        ]
       }
     },
     "securitySchemes": {
