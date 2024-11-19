@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://your-company-domain/api/v1"
+      "url": "https://api.amongst.ai/api/v1"
     }
   ],
   "security": [
@@ -133,27 +133,6 @@
             "type": "boolean",
             "description": "Indicates if the agent should join as an ad-hoc participant"
           },
-          "agentImage": {
-            "type": "string",
-            "description": "URL to the agent's image"
-          },
-          "entryMessage": {
-            "type": "string",
-            "description": "Message the agent will send upon joining"
-          },
-          "speechToText": {
-            "type": "object",
-            "properties": {
-              "provider": {
-                "type": "string",
-                "description": "The speech-to-text provider to use"
-              },
-              "apiKey": {
-                "type": "string",
-                "description": "The apiKey of the speech-to-text provider"
-              }
-            }
-          },
           "automaticLeave": {
             "type": "object",
             "properties": {
@@ -259,8 +238,10 @@
     },
     "securitySchemes": {
       "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "Use the format 'Token <actual token>' for authentication."
       }
     }
   }
