@@ -1,4 +1,4 @@
-<!-- {
+{
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
@@ -14,40 +14,5 @@
       "from": "#0D9373",
       "to": "#07C983"
     }
-  },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Get Started",
-      "pages": [
-        "introduction"
-      ]
-    },
-    {
-      "group": "REST",
-      "pages": [
-        "rest/sending-a-agent",
-        "rest/getting-the-data",
-        "rest/meeting-voice-agents-(Beta)"
-      ]
-    },
-    {
-      "group": "API Documentation",
-      "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create"
-      ]
-    }
-  ]
-} -->
+  }
+}
