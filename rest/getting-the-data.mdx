@@ -1,7 +1,7 @@
 ---
-title: 'Getting the data'
-description: 'Learn how to receive and process meeting data through webhooks, including live events and post-meeting recordings <br></br><br></br> The best way to retrieve this is via webhooks. See the Webhook Overview for details. If you can’t use webhooks for some reason, you can manually call the Retrieve meeting data endpoint to get the meeting details.'
-icon: 'code'
+title: "Getting the data"
+description: "Learn how to receive and process meeting data through webhooks, including live events and post-meeting recordings <br></br><br></br> The best way to retrieve this is via webhooks. See the Webhook Overview for details. If you can’t use webhooks for some reason, you can manually call the Retrieve meeting data endpoint to get the meeting details."
+icon: "code"
 ---
 
 ## Webhook Overview
@@ -23,7 +23,7 @@ Content-Type: application/json
 {
   "event": "agent.status_change",
   "data": {
-    "agentId": "zesxtrdctfvgybuhn",
+    "agentId": "240b2f22-785d-451a-bb7f-3084344a96fb",
     "status": {
       "code": "in_waiting_room",
       "created_at": "2024-08-10T11:00:00.000Z"
@@ -66,67 +66,119 @@ Content-Type: application/json
 {
   "event": "complete",
   "data": {
-    "agentId": "zesxtrdctfvgybuhn",
-    "videoUrl": "https://meeting-agent-call-data.s3.ap-south-1.amazonaws.com/path/to/video.mp4?X-Amz-Signature=...",
-    "participants": [
-      {
-        "name": "Adam",
-        "role": "organizer"
-      },
-      {
-        "name": "Steve",
-        "role": "participant"
-      }
-    ],
-    "transcript": [
-      {
-        "speaker": "Adam",
-        "words": [
-          {
-            "start": 0.1523110430839002,
-            "end": 1.2345110430839003,
-            "word": "Hi"
-          },
-          {
-            "start": 1.2345110430839003,
-            "end": 1.44860110430839004,
-            "word": "Steve!"
-          }
-        ]
-      },
-      {
-        "speaker": "Steve",
-        "words": [
-          {
-            "start": 2.5432110430839,
-            "end": 2.784401043083901,
-            "word": "Hello"
-          },
-          {
-            "start": 2.784401043083901,
-            "end": 2.9185110430839005,
-            "word": "Adam!"
-          }
-        ]
-      }
-    ]
+    "agentId": "240b2f22-785d-451a-bb7f-3084344a96fb",
+    "recording": {
+        "url": "https://your-bucket-name/meeting-data/GMEET/ciy-ngkb-rpw/323121fa-f543-4559-ab2e-ef200...",
+        "startedAt": "2024-12-13T22:15:19.309Z",
+        "completedAt": "2024-12-13T22:17:22.942Z"
+    },
+    "participants": [{ "name": "Michael" }, { "name": "Diana" }],
+    "transcript": [{
+      "speaker": "Michael",
+      "start_timestamp": 60.73544357800001,
+      "end_timestamp": 62.246695605,
+      "words": [
+        {
+          "start_timestamp": 60.73544357800001,
+          "end_timestamp": 61.5,
+          "text": "Hi, Diana!"
+        },
+        {
+          "start_timestamp": 61.8,
+          "end_timestamp": 62.246695605,
+          "text": "How are you?"
+        }
+      ]
+    },
+    {
+      "speaker": "Diana",
+      "start_timestamp": 63.236073276,
+      "end_timestamp": 65.90755039,
+      "words": [
+        {
+          "start_timestamp": 63.236073276,
+          "end_timestamp": 64.0,
+          "text": "Hi, Michael!"
+        },
+        {
+          "start_timestamp": 64.5,
+          "end_timestamp": 65.90755039,
+          "text": "I’m good, you?"
+        }
+      ]
+    }],
+    "speakerTimeline": { "Ajay": [{ startTime: 17.12312, endTime: 18.1234 }, ...] }
   }
 }
 ```
+
+### 3. Failed Webhook
+
+Here’s an example of the payload you'll receive for a failed event, assuming your webhook URL is `https://your-company.com/your-endpoint`:
+
+```http
+POST /your-endpoint HTTP/1.1
+Host: your-company.com
+Content-Type: application/json
+
+{
+  "event": "failed",
+  "data": {
+    agentId: "240b2f22-785d-451a-bb7f-3084344a96fb",
+    error: "NotAdmitted"
+  }
+}
+```
+
+#### The failure types can be:
+
+| **Error**               | **Description**                                                                                                                                            |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ServerError`           | An unexpected error occurred. Please contact us if the issue persists.                                                                                     |
+| `InvalidMeetingUrl`     | The meeting URL provided is not a valid (Zoom, Meet, Teams) URL.                                                                                           |
+| `NotAdmitted`           | The agent was not admitted within the provided time. By default, this time is 15 minutes, but it can be configured via `automaticLeave.waitingRoomTimeout` |
+| `DeniedFromWaitingRoom` | The agent was denied entry from the waiting room.                                                                                                          |
 
 ## Retrieve the Meeting Recording
 
 To access the recording generated by the agent, use the Retrieve Agent API endpoint. Replace the AGENT-ID with the ID you saved in Step 1, and substitute the Authorization placeholder with your API key.
 
-```javascript
-const agentId = 'YOUR-AGENT-ID'; // Replace with your Agent ID
-fetch(`https://your-company-domain/api/v1/agent/meeting-data?agentId=${agentId}`, {
-    method: 'GET',
-    headers: {
-        'Authorization': `Bearer ${YOUR_API_KEY}`
-    }
-})
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error('Error:', error));
+<Tabs>
+  <Tab label="cURL" title="Bash">
+  ```bash
+  curl -X GET "https://your-company-domain/api/v1/agent/YOUR-AGENT-ID/meeting-data" \
+  -H "Authorization: Token YOUR_API_KEY"
+  ```
+  </Tab>
+
+  <Tab label="JavaScript" title="JavaScript">
+  ```javascript
+  const agentId = 'YOUR-AGENT-ID'; // Replace with your Agent ID
+  fetch(`https://your-company-domain/api/v1/agent/${agentId}/meeting-data`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Token ${YOUR_API_KEY}`
+      }
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
+  ```
+  </Tab>
+
+  <Tab label="Python" title="Python">
+  ```python
+  import requests
+
+agent_id = 'YOUR-AGENT-ID' # Replace with your Agent ID
+url = f"https://your-company-domain/api/v1/agent/{agent_id}/meeting-data"
+headers = {
+"Authorization": f"Token {YOUR_API_KEY}"
+}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+print(data)
 ```
+</Tab>
+</Tabs>

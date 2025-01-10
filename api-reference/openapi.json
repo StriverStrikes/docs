@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://api.amongst.ai/api/v1"
+      "url": "https://your-company-domain/api/v1"
     }
   ],
   "security": [
@@ -67,7 +67,7 @@
         }
       }
     },
-    "/agent/meeting-data": {
+    "/agent/{agentId}/meeting-data": {
       "get": {
         "description": "Fetches meeting data for a specific agent by agentId.",
         "parameters": [
@@ -114,6 +114,54 @@
           }
         }
       }
+    },
+    "/agent/{agentId}/transcript": {
+      "get": {
+        "description": "Fetches meeting transcript for a specific agent by agentId.",
+        "parameters": [
+          {
+            "name": "agentId", 
+            "in": "query",
+            "description": "The ID of the agent whose transcript is being fetched",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meeting transcript successfully fetched for the agent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscriptResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or missing agentId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access, invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -131,22 +179,40 @@
           },
           "adhoc": {
             "type": "boolean",
-            "description": "Indicates if the agent should join as an ad-hoc participant"
+            "description": "Indicates if the agent should join as an ad-hoc participant",
+            "default": false
+          },
+          "transcriptionProvider": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of transcription provider",
+                "default": "meeting_captions"
+              },
+              "apiKey": {
+                "type": "string",
+                "description": "API key for transcription provider"
+              }
+            }
           },
           "automaticLeave": {
             "type": "object",
             "properties": {
               "EveryoneLeftTimeout": {
                 "type": "integer",
-                "description": "Time (in seconds) to wait before the agent leaves if everyone has left"
+                "description": "Time (in seconds) to wait before the agent leaves if everyone has left",
+                "default": 60
               },
               "NoOneJoinedTimeout": {
                 "type": "integer",
-                "description": "Time (in seconds) to wait before the agent leaves if no one has joined"
+                "description": "Time (in seconds) to wait before the agent leaves if no one has joined",
+                "default": 900
               },
               "WaitingRoomTimeout": {
                 "type": "integer",
-                "description": "Time (in seconds) to wait before the agent leaves if waiting in the room"
+                "description": "Time (in seconds) to wait before the agent leaves if waiting in the room",
+                "default": 900
               }
             }
           },
@@ -157,7 +223,8 @@
           "metadata": {
             "type": "object",
             "description": "Custom metadata that can be included with the request",
-            "additionalProperties": true
+            "additionalProperties": true,
+            "default": { "additionalKey": "value" }
           }
         },
         "required": [
@@ -172,50 +239,175 @@
           "agentId": {
             "type": "string",
             "description": "Unique identifier of the agent that joined the meeting"
+          },
+          "statusChanges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "createdAt": { "type": "string", "format": "date-time" },
+                "sub_code": { "type": "string", "nullable": true }
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Message from the agent"
           }
         }
       },
       "MeetingDataResponse": {
         "type": "object",
         "properties": {
-          "agentId": {
-            "type": "string",
-            "description": "The agentId"
-          },
-          "videoUrl": {
-            "type": "string",
-            "description": "The video url of the recording."
-          },
-          "transcription": {
+          "agent": {
             "type": "object",
-            "description": "The transcription of the meeting."
+            "properties": {
+              "agentId": {
+                "type": "string",
+                "description": "Unique identifier of the agent"
+              },
+              "agentName": {
+                "type": "string",
+                "description": "Name of the agent"
+              },
+              "meetingId": {
+                "type": "string",
+                "description": "Unique identifier of the meeting"
+              },
+              "meetingUrl": {
+                "type": "string",
+                "description": "URL of the meeting"
+              },
+              "webhookUrl": {
+                "type": "string",
+                "description": "Webhook URL for receiving meeting events"
+              },
+              "platform": {
+                "type": "string",
+                "description": "Meeting platform (e.g. GMEET)"
+              },
+              "entryMessage": {
+                "type": "string",
+                "description": "Message sent when agent joins meeting"
+              },
+              "transcriptionProvider": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of transcription provider"
+                  }
+                }
+              }
+            }
           },
-          "meetingUrl": {
-            "type": "string",
-            "description": "The URL of the meeting"
+          "recording": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "URL of the meeting recording"
+              },
+              "startedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When recording started"
+              },
+              "completedAt": {
+                "type": "string",
+                "format": "date-time", 
+                "description": "When recording completed"
+              }
+            }
           },
           "participants": {
             "type": "array",
             "items": {
-              "type": "string",
-              "description": "Participant's name"
-            },
-            "description": "List of participants in the meeting"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of participant"
+                }
+              }
+            }
           },
-          "status": {
-            "type": "string",
-            "description": "Current status of the meeting (e.g., ongoing, completed)"
-          },
-          "startTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Start time of the meeting"
-          },
-          "endTime": {
+          "createdAt": {
             "type": "string",
             "format": "date-time",
-            "description": "End time of the meeting"
+            "description": "When the meeting data was created"
+          },
+          "statusChanges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Status code"
+                },
+                "sub_code": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Additional status details"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When status changed"
+                }
+              }
+            }
           }
+        }
+      },
+      "TranscriptResponse": {
+        "type": "array",
+        "items": {
+              "type": "object",
+              "properties": {
+                "speaker": {
+                  "type": "string",
+                  "description": "Name of the speaker"
+                },
+                "start_timestamp": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Start time of the speech segment in seconds",
+                  "default": 0
+                },
+                "end_timestamp": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "End time of the speech segment in seconds",
+                  "default": 0
+                },
+                "words": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start_timestamp": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Start time of the word in seconds",
+                        "default": 0
+                      },
+                      "end_timestamp": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "End time of the word in seconds",
+                        "default": 0
+                      },
+                      "text": {
+                        "type": "string",
+                        "description": "The spoken word or phrase"
+                      }
+                    }
+                  }
+                }
+            }
         }
       },
       "Error": {

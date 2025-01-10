@@ -14,5 +14,43 @@
       "from": "#0D9373",
       "to": "#07C983"
     }
-  }
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction"
+      ]
+    },
+    {
+      "group": "REST",
+      "pages": [
+        "rest/sending-a-agent",
+        "rest/getting-the-data",
+        "rest/meeting-voice-agents-(Beta)"
+      ]
+    },
+    {
+      "group": "API Documentation",
+      "pages": [
+        "api-reference/introduction"
+      ]
+    },
+    {
+      "group": "Current APIs",
+      "pages": [
+        "api-reference/endpoint/create",
+        "api-reference/endpoint/get",
+        "api-reference/endpoint/getTranscript",
+        "api-reference/endpoint/getSpeakerTimeline",
+        "api-reference/endpoint/getAgent"
+      ]
+    }
+  ]
 }
