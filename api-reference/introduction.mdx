@@ -1,8 +1,20 @@
 ---
 title: 'Introduction'
-description: 'Overview of API'
+description: 'Use and leverage Meeting Agents using APIs through HTTP requests from any language in your applicatons and workflows.'
 ---
+
+Meeting Agent API features consistent, resource-oriented URLs, handles application/json request bodies, returns responses in JSON format, and utilizes standard HTTP response codes, authentication methods, and HTTP verbs.
 
 ## Authorization
 
-You need to provide the API key, which can be obtained while onboarding.
+To authenticate your API requests, you must include your API Key in the Authorization header of HTTP requests.
+
+## Example of an Authenticated API Request
+
+Following is an example of making a GET request to Meeting Agent API using the API key:
+
+```
+GET https://your-company-domain/agent/join
+Headers:
+  Authorization: Token <api_key>
+```

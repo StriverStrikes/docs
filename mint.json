@@ -43,10 +43,13 @@
       ]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "Current APIs",
       "pages": [
+        "api-reference/endpoint/create",
         "api-reference/endpoint/get",
-        "api-reference/endpoint/create"
+        "api-reference/endpoint/getTranscript",
+        "api-reference/endpoint/getSpeakerTimeline",
+        "api-reference/endpoint/getAgent"
       ]
     }
   ]

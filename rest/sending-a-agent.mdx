@@ -21,53 +21,18 @@ for use in further steps.
 </Tip>
 
 <Tabs>
-  <Tab label="JavaScript" title="JavaScript">
-
-  ```javascript
-  fetch("https://your-company-domain/api/v1/agent/join", {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${YOUR_API_KEY}`
-      },
-      body: JSON.stringify({
-          meetingUrl: 'YOUR-MEETING-URL',
-          agentName: 'Meeting Agent',
-          adhoc: true,
-          agentImage: "YOUR-IMAGE_URL",
-          entryMessage: "Hello, I am here to assist you :)",
-          speechToText: {
-              provider: "Default"
-          },
-          automaticLeave: {
-              EveryoneLeftTimeout: 60, // seconds
-              NoOneJoinedTimeout: 900,
-              WaitingRoomTimeout: 900
-          },
-          webhookUrl: "YOUR-WEBHOOK_URL",
-          metadata: { customKey: "value" }
-      })
-  }).then(response => response.json())
-  .then(data => console.log(data.agentId))
-  .catch((error) => console.error("Error:", error));
-  ```
-
-  </Tab>
-
   <Tab label="cURL" title="Bash">
 
   ```bash
   curl -X POST "https://your-company-domain/api/v1/agent/join" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Authorization: Token YOUR_API_KEY" \
   -d '{
       "meetingUrl": "YOUR-MEETING-URL",
       "agentName": "Meeting Agent",
-      "adhoc": true,
-      "agentImage": "YOUR-IMAGE_URL",
-      "entryMessage": "Hello, I am here to assist you :)",
-      "speechToText": {
-          "provider": "Default"
+      "adhoc": false,
+      "transcriptionProvider": {
+          name: "meeting_captions",
       },
       "automaticLeave": {
           "EveryoneLeftTimeout": 60,
@@ -81,6 +46,37 @@ for use in further steps.
 
   </Tab>
 
+  <Tab label="JavaScript" title="JavaScript">
+
+  ```javascript
+  fetch("https://your-company-domain/api/v1/agent/join", {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${YOUR_API_KEY}`
+      },
+      body: JSON.stringify({
+          meetingUrl: 'YOUR-MEETING-URL',
+          agentName: 'Meeting Agent',
+          adhoc: false,
+          transcriptionProvider: {
+              name: "meeting_captions",
+          },
+          automaticLeave: {
+              EveryoneLeftTimeout: 60, // seconds
+              NoOneJoinedTimeout: 900,
+              WaitingRoomTimeout: 900
+          }
+          webhookUrl: "YOUR-WEBHOOK_URL",
+          metadata: { customKey: "value" }
+      })
+  }).then(response => response.json())
+  .then(data => console.log(data.agentId))
+  .catch((error) => console.error("Error:", error));
+  ```
+
+  </Tab>
+
   <Tab label="Python" title="Python">
 
   ```python
@@ -89,16 +85,14 @@ for use in further steps.
   url = "https://your-company-domain/api/v1/agent/join"
   headers = {
       "Content-Type": "application/json",
-      "Authorization": f"Bearer {YOUR_API_KEY}"
+      "Authorization": f"Token {YOUR_API_KEY}"
   }
   payload = {
       "meetingUrl": "YOUR-MEETING-URL",
       "agentName": "Meeting Agent",
-      "adhoc": True,
-      "agentImage": "YOUR-IMAGE_URL",
-      "entryMessage": "Hello, I am here to assist you :)",
-      "speechToText": {
-          "provider": "Default"
+      "adhoc": False,
+      "transcriptionProvider": {
+          name: "meeting_captions",
       },
       "automaticLeave": {
           "EveryoneLeftTimeout": 60,
@@ -137,27 +131,17 @@ for use in further steps.
     *Ideal for planned calendar events to guarantee agent availability.*
 </ResponseField>
 
-<ResponseField name="agentImage" type="string" optional>
-  **Description**: The URL of the image the agent will display. Must be a valid URI format.     
-  **Optional**: Yes
-</ResponseField>
-
-<ResponseField name="entryMessage" type="string" optional>
-  **Description**: A message that the agent sends within 10 seconds of joining the meeting.   
-  **Optional**: Yes
-</ResponseField>
-
-<ResponseField name="speechToText" type="object" optional>
+<ResponseField name="transcriptionProvider" type="object" optional>
   **Description**: If not provided, no transcription will be generated.      
   **Optional**: Yes
 
   Must be an object with:
   
   - **provider**: One of:
-    - `"Default"`: Standard transcription, no API key needed.
-    - `"Deepgram"` or `"RevAI"`: Requires their respective API key to be provided.
+    - `"meeting_captions"`: Standard transcription, no API key needed.
+    - `"deepgram"` or `"rev"`: Requires their respective API key to be provided.
   
-  - **apiKey**: Required when using Deepgram or RevAI providers. Must be a valid API key from the respective service.
+  - **apiKey**: Required when using deepgram or rev providers. Must be a valid API key from the respective service.
 </ResponseField>
 
 <ResponseField name="automaticLeave" type="object" optional>
