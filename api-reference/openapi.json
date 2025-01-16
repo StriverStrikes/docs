@@ -27,7 +27,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/JoinRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/JoinRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "agentVideoOutput": {
+                        "type": "object",
+                        "properties": {
+                          "base64Data": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
               }
             }
           },

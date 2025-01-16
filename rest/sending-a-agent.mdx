@@ -40,7 +40,10 @@ for use in further steps.
           "WaitingRoomTimeout": 900
       },
       "webhookUrl": "YOUR-WEBHOOK_URL",
-      "metadata": { "customKey": "value" }
+      "metadata": { "customKey": "value" },
+      "agentVideoOutput": {
+          "base64Data": "/9j/4AA..."
+      }
   }'
   ```
 
@@ -66,9 +69,12 @@ for use in further steps.
               EveryoneLeftTimeout: 60, // seconds
               NoOneJoinedTimeout: 900,
               WaitingRoomTimeout: 900
-          }
+          },
           webhookUrl: "YOUR-WEBHOOK_URL",
-          metadata: { customKey: "value" }
+          metadata: { customKey: "value" },
+          agentVideoOutput: {
+              base64Data: "/9j/4AA..."
+          }
       })
   }).then(response => response.json())
   .then(data => console.log(data.agentId))
@@ -100,7 +106,10 @@ for use in further steps.
           "WaitingRoomTimeout": 900
       },
       "webhookUrl": "YOUR-WEBHOOK_URL",
-      "metadata": { "customKey": "value" }
+      "metadata": { "customKey": "value" },
+      "agentVideoOutput": {
+          "base64Data": "/9j/4AA..."
+      }
   }
 
   response = requests.post(url, json=payload, headers=headers)
@@ -159,6 +168,15 @@ for use in further steps.
   **Optional**: Yes
 
   *Usage*: Useful for custom logic or tracking, as this data can be retrieved later.
+</ResponseField>
+
+<ResponseField name="agentVideoOutput" type="object" optional>
+  **Description**: Customize what appears in the agent's video feed during the meeting.     
+  **Optional**: Yes
+
+  - **resolution**: Must be 1600x900 pixels (16:9 aspect ratio)
+
+  *Note*: Only static images are currently supported. The image must exactly match the required 1600x900 pixel resolution.
 </ResponseField>
 
 ## 4. Talk for a little bit
