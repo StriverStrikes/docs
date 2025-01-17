@@ -43,6 +43,14 @@ for use in further steps.
       "metadata": { "customKey": "value" },
       "agentVideoOutput": {
           "base64Data": "/9j/4AA..."
+      },
+      "streaming": {
+          "transcription": {
+              "url": "wss://your-websocket-endpoint/transcription"
+          },
+          "media": {
+              "audioUrl": "wss://your-websocket-endpoint/audio"
+          }
       }
   }'
   ```
@@ -74,6 +82,14 @@ for use in further steps.
           metadata: { customKey: "value" },
           agentVideoOutput: {
               base64Data: "/9j/4AA..."
+          },
+          streaming: {
+              transcription: {
+                  url: "wss://your-websocket-endpoint/transcription"
+              },
+              media: {
+                  audioUrl: "wss://your-websocket-endpoint/audio"
+              }
           }
       })
   }).then(response => response.json())
@@ -109,6 +125,14 @@ for use in further steps.
       "metadata": { "customKey": "value" },
       "agentVideoOutput": {
           "base64Data": "/9j/4AA..."
+      },
+      "streaming": {
+          "transcription": {
+              "url": "wss://your-websocket-endpoint/transcription"
+          },
+          "media": {
+              "audioUrl": "wss://your-websocket-endpoint/audio"
+          }
       }
   }
 
