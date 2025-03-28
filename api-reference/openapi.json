@@ -73,7 +73,7 @@
         "parameters": [
           {
             "name": "agentId",
-            "in": "query",
+            "in": "path",
             "description": "The ID of the agent whose meeting data is being fetched",
             "required": true,
             "schema": {
@@ -121,7 +121,7 @@
         "parameters": [
           {
             "name": "agentId", 
-            "in": "query",
+            "in": "path",
             "description": "The ID of the agent whose transcript is being fetched",
             "required": true,
             "schema": {
@@ -169,7 +169,7 @@
         "parameters": [
           {
             "name": "agentId", 
-            "in": "query",
+            "in": "path",
             "description": "The ID of the agent whose Speaker Timeline is being fetched",
             "required": true,
             "schema": {
@@ -217,7 +217,7 @@
         "parameters": [
           {
             "name": "agentId", 
-            "in": "query",
+            "in": "path",
             "description": "The ID of the agent whose details is being fetched",
             "required": true,
             "schema": {
@@ -616,121 +616,121 @@
         "type": "object",
         "properties": {
           "url": {
-        "type": "string",
-        "description": "URL of the meeting recording"
+            "type": "string",
+            "description": "URL of the meeting recording"
           },
           "startedAt": {
-        "type": "string",
-        "format": "date-time",
-        "description": "When recording started"
-          },
-          "completedAt": {
-        "type": "string",
-        "format": "date-time", 
-        "description": "When recording completed"
-          },
-          "agent": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier of the agent"
-          },
-          "accountId": {
-            "type": "string",
-            "description": "Account ID associated with the agent"
-          },
-          "workspace": {
-            "type": "string",
-            "description": "Workspace name of the agent"
-          },
-          "statusChanges": {
-            "type": "array",
-            "items": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "string",
-              "description": "Status code"
-            },
-            "sub_code": {
-              "type": "string",
-              "nullable": true,
-              "description": "Additional status details"
-            },
-            "createdAt": {
-              "type": "string",
-              "format": "date-time",
-              "description": "When status changed"
-            }
-          }
-            }
-          },
-          "createdAt": {
             "type": "string",
             "format": "date-time",
-            "description": "When the agent was created"
-          }
-        }
+            "description": "When recording started"
           },
-          "joinParams": {
-        "type": "object",
-        "properties": {
-          "agentId": {
+          "completedAt": {
             "type": "string",
-            "description": "Unique identifier of the agent"
+            "format": "date-time", 
+            "description": "When recording completed"
           },
-          "agentName": {
-            "type": "string",
-            "description": "Name of the agent"
-          },
-          "meetingId": {
-            "type": "string",
-            "description": "Unique identifier of the meeting"
-          },
-          "meetingPassword": {
-            "type": "string",
-            "description": "Password for the meeting"
-          },
-          "meetingUrl": {
-            "type": "string",
-            "description": "URL of the meeting"
-          },
-          "webhookUrl": {
-            "type": "string",
-            "description": "Webhook URL for receiving meeting events"
-          },
-          "platform": {
-            "type": "string",
-            "description": "Meeting platform (e.g., TEAMS)"
-          },
-          "metadata": {
-            "type": "object",
-            "description": "Custom metadata included with the request",
-            "additionalProperties": true
-          },
-          "automaticLeave": {
+          "agent": {
             "type": "object",
             "properties": {
-          "EveryoneLeftTimeout": {
-            "type": "integer",
-            "description": "Time (in seconds) to wait before the agent leaves if everyone has left"
-          },
-          "NoOneJoinedTimeout": {
-            "type": "integer",
-            "description": "Time (in seconds) to wait before the agent leaves if no one has joined"
-          },
-          "WaitingRoomTimeout": {
-            "type": "integer",
-            "description": "Time (in milliseconds) to wait before the agent leaves if waiting in the room"
-          }
+              "id": {
+                "type": "string",
+                "description": "Unique identifier of the agent"
+              },
+              "accountId": {
+                "type": "string",
+                "description": "Account ID associated with the agent"
+              },
+              "workspace": {
+                "type": "string",
+                "description": "Workspace name of the agent"
+              },
+              "statusChanges": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Status code"
+                    },
+                    "sub_code": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "Additional status details"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "When status changed"
+                    }
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the agent was created"
+              }
             }
           },
-          "adhoc": {
-            "type": "boolean",
-            "description": "Indicates if the agent joined as an ad-hoc participant"
-          }
-        }
+          "joinParams": {
+            "type": "object",
+            "properties": {
+              "agentId": {
+                "type": "string",
+                "description": "Unique identifier of the agent"
+              },
+              "agentName": {
+                "type": "string",
+                "description": "Name of the agent"
+              },
+              "meetingId": {
+                "type": "string",
+                "description": "Unique identifier of the meeting"
+              },
+              "meetingPassword": {
+                "type": "string",
+                "description": "Password for the meeting"
+              },
+              "meetingUrl": {
+                "type": "string",
+                "description": "URL of the meeting"
+              },
+              "webhookUrl": {
+                "type": "string",
+                "description": "Webhook URL for receiving meeting events"
+              },
+              "platform": {
+                "type": "string",
+                "description": "Meeting platform (e.g., TEAMS)"
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Custom metadata included with the request",
+                "additionalProperties": true
+              },
+              "automaticLeave": {
+                "type": "object",
+                "properties": {
+                  "EveryoneLeftTimeout": {
+                    "type": "integer",
+                    "description": "Time (in seconds) to wait before the agent leaves if everyone has left"
+                  },
+                  "NoOneJoinedTimeout": {
+                    "type": "integer",
+                    "description": "Time (in seconds) to wait before the agent leaves if no one has joined"
+                  },
+                  "WaitingRoomTimeout": {
+                    "type": "integer",
+                    "description": "Time (in milliseconds) to wait before the agent leaves if waiting in the room"
+                  }
+                }
+              },
+              "adhoc": {
+                "type": "boolean",
+                "description": "Indicates if the agent joined as an ad-hoc participant"
+              }
+            }
           }
         }
       },
