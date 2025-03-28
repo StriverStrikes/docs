@@ -27,24 +27,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/JoinRequest"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "agentVideoOutput": {
-                        "type": "object",
-                        "properties": {
-                          "base64Data": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/components/schemas/JoinRequest"
               }
             }
           },
@@ -179,6 +162,102 @@
           }
         }
       }
+    },
+    "/agent/{agentId}/speaker-timeline": {
+      "get": {
+        "description": "Fetches meeting Speaker Timeline for a specific agent by agentId.",
+        "parameters": [
+          {
+            "name": "agentId", 
+            "in": "query",
+            "description": "The ID of the agent whose Speaker Timeline is being fetched",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meeting Speaker Timeline successfully fetched for the agent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpeakerTimelineResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or missing agentId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access, invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent/{agentId}": {
+      "get": {
+        "description": "Fetches agent details for a specific agent by agentId.",
+        "parameters": [
+          {
+            "name": "agentId", 
+            "in": "query",
+            "description": "The ID of the agent whose details is being fetched",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent details successfully fetched for the agent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAgentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or missing agentId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access, invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -192,7 +271,8 @@
           },
           "agentName": {
             "type": "string",
-            "description": "Name of the meeting agent"
+            "description": "Name of the meeting agent",
+            "maxLength": 50
           },
           "adhoc": {
             "type": "boolean",
@@ -205,13 +285,25 @@
               "name": {
                 "type": "string",
                 "description": "Name of transcription provider",
+                "enum": ["deepgram", "rev", "meeting_captions"],
                 "default": "meeting_captions"
               },
               "apiKey": {
                 "type": "string",
                 "description": "API key for transcription provider"
+              },
+              "streaming": {
+                "type": "object",
+                "properties": {
+                  "websocketUrl": {
+                    "type": "string",
+                    "description": "WebSocket URL for streaming transcription"
+                  }
+                },
+                "required": ["websocketUrl"]
               }
-            }
+            },
+            "required": ["name"]
           },
           "automaticLeave": {
             "type": "object",
@@ -235,13 +327,82 @@
           },
           "webhookUrl": {
             "type": "string",
-            "description": "Webhook URL to send meeting updates"
+            "description": "Webhook URL to send meeting updates",
+            "maxLength": 200
           },
           "metadata": {
             "type": "object",
             "description": "Custom metadata that can be included with the request",
             "additionalProperties": true,
             "default": { "additionalKey": "value" }
+          },
+          "agentVideoOutput": {
+            "type": "object",
+            "description": "Video output configuration for the agent",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "URL of the video source"
+              },
+              "base64Data": {
+                "type": "string",
+                "description": "Base64 encoded video data"
+              }
+            },
+            "oneOf": [
+              { "required": ["url"] },
+              { "required": ["base64Data"] }
+            ]
+          },
+          "mediaStreaming": {
+            "type": "object",
+            "description": "Media streaming configuration",
+            "properties": {
+              "audio": {
+                "type": "object",
+                "properties": {
+                  "outputFormat": {
+                    "type": "string",
+                    "enum": ["pcm_16000", "pcm_24000", "pcm_48000"],
+                    "description": "Audio output format"
+                  },
+                  "websocketUrl": {
+                    "type": "string",
+                    "description": "WebSocket URL for audio streaming"
+                  }
+                },
+                "required": ["websocketUrl"]
+              }
+            },
+            "required": ["audio"]
+          },
+          "chat": {
+            "type": "object",
+            "description": "Chat message configuration",
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "Chat message to send"
+              }
+            },
+            "required": ["message"]
+          },
+          "recordingSettings": {
+            "type": "object",
+            "description": "Recording settings configuration",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": ["fullStream", "audioOnly"],
+                "description": "Recording mode"
+              },
+              "quality": {
+                "type": "string",
+                "enum": ["high", "low"],
+                "description": "Recording quality"
+              }
+            },
+            "required": ["mode"]
           }
         },
         "required": [
@@ -425,6 +586,152 @@
                   }
                 }
             }
+        }
+      },
+      "SpeakerTimelineResponse": {
+        "type": "array",
+        "items": {
+              "type": "object",
+              "properties": {
+                "speaker": {
+                  "type": "string",
+                  "description": "Name of the speaker"
+                },
+                "start_timestamp": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Start time of the speech segment in seconds",
+                  "default": 0
+                },
+                "end_timestamp": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "End time of the speech segment in seconds",
+                  "default": 0
+                }
+            }
+        }
+      },
+      "GetAgentResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+        "type": "string",
+        "description": "URL of the meeting recording"
+          },
+          "startedAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "When recording started"
+          },
+          "completedAt": {
+        "type": "string",
+        "format": "date-time", 
+        "description": "When recording completed"
+          },
+          "agent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the agent"
+          },
+          "accountId": {
+            "type": "string",
+            "description": "Account ID associated with the agent"
+          },
+          "workspace": {
+            "type": "string",
+            "description": "Workspace name of the agent"
+          },
+          "statusChanges": {
+            "type": "array",
+            "items": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Status code"
+            },
+            "sub_code": {
+              "type": "string",
+              "nullable": true,
+              "description": "Additional status details"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When status changed"
+            }
+          }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the agent was created"
+          }
+        }
+          },
+          "joinParams": {
+        "type": "object",
+        "properties": {
+          "agentId": {
+            "type": "string",
+            "description": "Unique identifier of the agent"
+          },
+          "agentName": {
+            "type": "string",
+            "description": "Name of the agent"
+          },
+          "meetingId": {
+            "type": "string",
+            "description": "Unique identifier of the meeting"
+          },
+          "meetingPassword": {
+            "type": "string",
+            "description": "Password for the meeting"
+          },
+          "meetingUrl": {
+            "type": "string",
+            "description": "URL of the meeting"
+          },
+          "webhookUrl": {
+            "type": "string",
+            "description": "Webhook URL for receiving meeting events"
+          },
+          "platform": {
+            "type": "string",
+            "description": "Meeting platform (e.g., TEAMS)"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Custom metadata included with the request",
+            "additionalProperties": true
+          },
+          "automaticLeave": {
+            "type": "object",
+            "properties": {
+          "EveryoneLeftTimeout": {
+            "type": "integer",
+            "description": "Time (in seconds) to wait before the agent leaves if everyone has left"
+          },
+          "NoOneJoinedTimeout": {
+            "type": "integer",
+            "description": "Time (in seconds) to wait before the agent leaves if no one has joined"
+          },
+          "WaitingRoomTimeout": {
+            "type": "integer",
+            "description": "Time (in milliseconds) to wait before the agent leaves if waiting in the room"
+          }
+            }
+          },
+          "adhoc": {
+            "type": "boolean",
+            "description": "Indicates if the agent joined as an ad-hoc participant"
+          }
+        }
+          }
         }
       },
       "Error": {

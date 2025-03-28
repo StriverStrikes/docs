@@ -72,9 +72,9 @@ Content-Type: application/json
         "startedAt": "2024-12-13T22:15:19.309Z",
         "completedAt": "2024-12-13T22:17:22.942Z"
     },
-    "participants": [{ "name": "Michael" }, { "name": "Diana" }],
+    "participants": [{ "name": "Steve" }, { "name": "Diana" }],
     "transcript": [{
-      "speaker": "Michael",
+      "speaker": "Steve",
       "start_timestamp": 60.73544357800001,
       "end_timestamp": 62.246695605,
       "words": [
@@ -98,7 +98,7 @@ Content-Type: application/json
         {
           "start_timestamp": 63.236073276,
           "end_timestamp": 64.0,
-          "text": "Hi, Michael!"
+          "text": "Hi, Steve!"
         },
         {
           "start_timestamp": 64.5,
@@ -107,7 +107,7 @@ Content-Type: application/json
         }
       ]
     }],
-    "speakerTimeline": { "Ajay": [{ startTime: 17.12312, endTime: 18.1234 }, ...] }
+    "speakerTimeline": [{ "speaker": "Steve", start_timestamp: 60.73, end_timestamp: 62.2 }, ...]
   }
 }
 ```
@@ -136,8 +136,11 @@ Content-Type: application/json
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ServerError`           | An unexpected error occurred. Please contact us if the issue persists.                                                                                     |
 | `InvalidMeetingUrl`     | The meeting URL provided is not a valid (Zoom, Meet, Teams) URL.                                                                                           |
-| `NotAdmitted`           | The agent was not admitted within the provided time. By default, this time is 15 minutes, but it can be configured via `automaticLeave.waitingRoomTimeout` |
+| `WaitingRoomTimeoutExceeded` | The agent was not admitted within the provided time. By default, this time is 15 minutes, but it can be configured via `automaticLeave.waitingRoomTimeout` |
 | `DeniedFromWaitingRoom` | The agent was denied entry from the waiting room.                                                                                                          |
+| `meetingNotFound`       |       No meeting was found at the given link.                                                                                                      |
+| `cannotJoinMeeting`     | The bot could not join the meeting URL provided. .                                                                                                          |
+| `meetingPasswordIncorrect` | The meeting password is incorrect.                                                                                                       |
 
 ## Retrieve the Meeting Recording
 

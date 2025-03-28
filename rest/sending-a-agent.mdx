@@ -24,35 +24,23 @@ for use in further steps.
   <Tab label="cURL" title="Bash">
 
   ```bash
-  curl -X POST "https://your-company-domain/api/v1/agent/join" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Token YOUR_API_KEY" \
-  -d '{
+  curl --location 'http://your-company-domain/api/v1/agent/join' \
+  --header 'Authorization: Token ${YOUR_API_KEY}' \
+  --header 'Content-Type: application/json' \
+  --data '{
       "meetingUrl": "YOUR-MEETING-URL",
-      "agentName": "Meeting Agent",
+      "agentName": "Agent X",
       "adhoc": false,
-      "transcriptionProvider": {
-          name: "meeting_captions",
+      "metadata": {
+          "clientId": 123
       },
       "automaticLeave": {
-          "EveryoneLeftTimeout": 60,
+          "EveryoneLeftTimeout": 2,
           "NoOneJoinedTimeout": 900,
           "WaitingRoomTimeout": 900
       },
-      "webhookUrl": "YOUR-WEBHOOK_URL",
-      "metadata": { "customKey": "value" },
-      "agentVideoOutput": {
-          "base64Data": "/9j/4AA..."
-      },
-      "streaming": {
-          "transcription": {
-              "url": "wss://your-websocket-endpoint/transcription"
-          },
-          "media": {
-              "audioUrl": "wss://your-websocket-endpoint/audio"
-          }
-      }
-  }'
+      "webhookUrl": "https://your-company-domain/bot/events"
+  }
   ```
 
   </Tab>
@@ -60,41 +48,36 @@ for use in further steps.
   <Tab label="JavaScript" title="JavaScript">
 
   ```javascript
-  fetch("https://your-company-domain/api/v1/agent/join", {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Token ${YOUR_API_KEY}`
-      },
-      body: JSON.stringify({
-          meetingUrl: 'YOUR-MEETING-URL',
-          agentName: 'Meeting Agent',
-          adhoc: false,
-          transcriptionProvider: {
-              name: "meeting_captions",
-          },
-          automaticLeave: {
-              EveryoneLeftTimeout: 60, // seconds
-              NoOneJoinedTimeout: 900,
-              WaitingRoomTimeout: 900
-          },
-          webhookUrl: "YOUR-WEBHOOK_URL",
-          metadata: { customKey: "value" },
-          agentVideoOutput: {
-              base64Data: "/9j/4AA..."
-          },
-          streaming: {
-              transcription: {
-                  url: "wss://your-websocket-endpoint/transcription"
-              },
-              media: {
-                  audioUrl: "wss://your-websocket-endpoint/audio"
-              }
-          }
-      })
-  }).then(response => response.json())
-  .then(data => console.log(data.agentId))
-  .catch((error) => console.error("Error:", error));
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", `Token ${YOUR_API_KEY}`);
+  myHeaders.append("Content-Type", "application/json");
+
+  const raw = JSON.stringify({
+    "meetingUrl": "YOUR-MEETING-URL",
+    "agentName": "Agent X",
+    "adhoc": false,
+    "metadata": {
+      "clientId": 123
+    },
+    "automaticLeave": {
+      "EveryoneLeftTimeout": 2,
+      "NoOneJoinedTimeout": 900,
+      "WaitingRoomTimeout": 900
+    },
+    "webhookUrl": "https://your-company-domain/bot/events"
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
+  };
+
+  fetch("http://your-company-domain/api/v1/agent/join", requestOptions)
+    .then((response) => response.text())
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
   ```
 
   </Tab>
@@ -103,41 +86,32 @@ for use in further steps.
 
   ```python
   import requests
+  import json
 
-  url = "https://your-company-domain/api/v1/agent/join"
+  url = "http://your-company-domain/api/v1/agent/join"
+
+  payload = json.dumps({
+    "meetingUrl": "YOUR-MEETING-URL",
+    "agentName": "Agent X",
+    "adhoc": False,
+    "metadata": {
+      "clientId": 123
+    },
+    "automaticLeave": {
+      "EveryoneLeftTimeout": 2,
+      "NoOneJoinedTimeout": 900,
+      "WaitingRoomTimeout": 900
+    },
+    "webhookUrl": "https://your-company-domain/bot/events"
+  })
   headers = {
-      "Content-Type": "application/json",
-      "Authorization": f"Token {YOUR_API_KEY}"
-  }
-  payload = {
-      "meetingUrl": "YOUR-MEETING-URL",
-      "agentName": "Meeting Agent",
-      "adhoc": False,
-      "transcriptionProvider": {
-          name: "meeting_captions",
-      },
-      "automaticLeave": {
-          "EveryoneLeftTimeout": 60,
-          "NoOneJoinedTimeout": 900,
-          "WaitingRoomTimeout": 900
-      },
-      "webhookUrl": "YOUR-WEBHOOK_URL",
-      "metadata": { "customKey": "value" },
-      "agentVideoOutput": {
-          "base64Data": "/9j/4AA..."
-      },
-      "streaming": {
-          "transcription": {
-              "url": "wss://your-websocket-endpoint/transcription"
-          },
-          "media": {
-              "audioUrl": "wss://your-websocket-endpoint/audio"
-          }
-      }
+    'Authorization': 'Token ${YOUR_API_KEY}',
+    'Content-Type': 'application/json'
   }
 
-  response = requests.post(url, json=payload, headers=headers)
-  print(response.json().get("agentId"))
+  response = requests.request("POST", url, headers=headers, data=payload)
+
+  print(response.text)
   ```
 
   </Tab>
@@ -152,6 +126,7 @@ for use in further steps.
 
 <ResponseField name="agentName" type="string" required>
   **Description**: The display name for the agent in the meeting.
+  **Max Length**: 50 characters
 </ResponseField>
 
 <ResponseField name="adhoc" type="boolean" required>
@@ -165,42 +140,79 @@ for use in further steps.
 </ResponseField>
 
 <ResponseField name="transcriptionProvider" type="object" optional>
-  **Description**: If not provided, no transcription will be generated.      
+  **Description**: Configuration for meeting transcription services.  
   **Optional**: Yes
 
-  Must be an object with:
-  
-  - **provider**: One of:
-    - `"meeting_captions"`: Standard transcription, no API key needed.
-    - `"deepgram"` or `"rev"`: Requires their respective API key to be provided.
-  
-  - **apiKey**: Required when using deepgram or rev providers. Must be a valid API key from the respective service.
+  **Properties**:
+  - **name**: One of:
+    - `"meeting_captions"`: Standard transcription (default, no API key needed)
+    - `"deepgram"` or `"rev"`: Requires API key
+  - **apiKey**: Required when using deepgram or rev providers
+  - **streaming**: Object with:
+    - **websocketUrl**: Required WebSocket URL for real-time transcription streaming
 </ResponseField>
 
 <ResponseField name="automaticLeave" type="object" optional>
-  **Description**: Controls the agent’s behavior when leaving a call. You can configure the `automaticLeave` object when calling `Create Agent`.     
+  **Description**: Controls the agent's automatic leaving behavior.  
   **Optional**: Yes
+
+  **Properties**:
+  - **EveryoneLeftTimeout**: Time (seconds) to wait after everyone leaves (default: 60)
+  - **NoOneJoinedTimeout**: Time (seconds) to wait if no one joins (default: 900)
+  - **WaitingRoomTimeout**: Time (seconds) in waiting room (default: 900)
 </ResponseField>
 
 <ResponseField name="webhookUrl" type="string" optional>
-  **Description**: A URL to receive live and post-meeting events.     
+  **Description**: URL to receive meeting events and updates.  
   **Optional**: Yes
+  **Max Length**: 200 characters
 </ResponseField>
 
 <ResponseField name="metadata" type="object" optional>
-  **Description**: Custom key-value pairs attached to the agent.     
+  **Description**: Custom key-value pairs attached to the agent.  
   **Optional**: Yes
+  **Default**: `{"additionalKey": "value"}`
 
   *Usage*: Useful for custom logic or tracking, as this data can be retrieved later.
 </ResponseField>
 
 <ResponseField name="agentVideoOutput" type="object" optional>
-  **Description**: Customize what appears in the agent's video feed during the meeting.     
+  **Description**: Customize the agent's video feed during the meeting.  
+  **Optional**: Yes
+  **Requirements**:
+  - Must provide either `url` OR `base64Data` (but not both)
+  - Most platforms support resolutions up to 1020x720. Higher-resolution images are automatically scaled down.
+
+  **Properties**:
+  - **url**: URL of the video source
+  - **base64Data**: Base64 encoded image data
+</ResponseField>
+
+<ResponseField name="mediaStreaming" type="object" optional>
+  **Description**: Configuration for streaming meeting audio.  
   **Optional**: Yes
 
-  - **resolution**: Must be 1600x900 pixels (16:9 aspect ratio)
+  **Properties**:
+  - **audio**: Required object with:
+    - **outputFormat**: One of `pcm_16000`, `pcm_24000`, or `pcm_48000`
+    - **websocketUrl**: Required WebSocket URL for audio streaming
+</ResponseField>
 
-  *Note*: Only static images are currently supported. The image must exactly match the required 1600x900 pixel resolution.
+<ResponseField name="chat" type="object" optional>
+  **Description**: Configure chat messages the agent will send (Only supported for Zoom).  
+  **Optional**: Yes
+
+  **Properties**:
+  - **message**: Required chat message content
+</ResponseField>
+
+<ResponseField name="recordingSettings" type="object" optional>
+  **Description**: Configure meeting recording options.  
+  **Optional**: Yes
+
+  **Properties**:
+  - **mode**: Required - `"audioOnly"` or `"fullStream"`
+  - **quality**: Optional - `"high"` or `"low"`
 </ResponseField>
 
 ## 4. Talk for a little bit

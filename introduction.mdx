@@ -5,29 +5,54 @@ description: 'Welcome to Meeting Agents documentation'
 
 ## Overview
 
-Record meetings, stream audio and video, generate transcripts, and so much more.
+AI-powered meeting agents that automatically:
 
-## What is an agent?
+- 📹 Record high-quality (Audio and Video / Audio Only)
+- 🎙️ Generate accurate transcripts  
+- 🤖 Participate as virtual attendees  
 
-An agent is the fundamental entity for accessing a given meeting's data.
+## Core Concepts
 
-Through an agent, you can interface with a meeting's video, audio, participants, and metadata in real-time during a call, as well as after the call for as long as the data is retained.
+### What is an Agent?
 
-## Video and audio
+The fundamental entity that:
 
-Meeting agents generate a recording that can be accessed in the videoUrl field of the agent when fetched from Retrieve agent. The field will contain a pre-signed S3 URL that you can use to play the video and processed accordingly.
+1. Joins meetings as a participant  
+2. Captures all meeting data in real-time  
+
+Agents maintain access to:
+- **Live video/audio streams**
+- **Participant lists and engagement**
+- **Meeting metadata**
+
+## Video and Audio Recording
+Meeting agents automatically generate **recordings** during calls.  
+You can retrieve the recording URL by fetching the agent using the **Retrieve Agent** API.  
+The `videoUrl` field contains a **pre-signed URL**, allowing you to stream or download the recording.
 
 ## Transcription
 
-There are two ways to generate transcripts:
+You can generate transcripts in two ways:
 
-- **Meeting Caption Transcription:** Using the meeting platform's native closed captioning feature to generate a transcript in real-time.
-- **AI Transcription:** Using a 3rd party AI transcription integration.
-Which of these you choose depends on your requirements, and we recommend reviewing the documentation for each to decide which best fits your use case.
+1. **Platform Captions:** Use the meeting platform's **native closed captioning**.  
+2. **AI Transcription:** Leverage **third-party AI transcription** services for more advanced and customizable transcriptions.  
 
-## Customizing your agents
+Here's a comparison to help you choose the best option:
 
-Meeting agents are fully white label-able to match your branding:
+| **Feature**          | **Platform Captions**                       | **AI Transcription**                      |
+|-----------------------|------------------------------------------|-----------------------------------------|
+| **Source**            | Meeting platform's closed captions        | Third-party AI transcription service    |
+| **Accuracy**          | Platform-dependent, may vary              | Higher accuracy with advanced NLP models |
+| **Per-Word Timestamp**| Not available                             | Available                               |
+| **Real-Time**         | Yes                                       | Yes                                     |
+| **Cost**              | Free                                      | Additional cost for AI service usage    |
 
-- **Output an Image:** Configure your agents to output a custom image.
-- **Set the name for your agents:** Change the name of your agents by providing an agent_name parameter in the Create agent request.
+### **Recommendation**
+- Use **Platform Captions** for basic, real-time transcription with no extra cost.  
+- Use **AI Transcription** for more accurate, timestamped, and customizable transcripts.
+
+## White-Labeling Agents
+Meeting agents are fully customizable to reflect your branding:
+
+- **Custom Images:** Display a custom image for your agents.  
+- **Custom Names:** Set a unique name by including the `agent_name` parameter when creating an agent.  
