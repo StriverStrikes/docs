@@ -33,6 +33,7 @@
       "pages": [
         "rest/sending-a-agent",
         "rest/getting-the-data",
+        "rest/media-streaming",
         "rest/meeting-voice-agents-(Beta)"
       ]
     },

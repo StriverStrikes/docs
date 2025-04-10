@@ -1,0 +1,70 @@
+---
+title: "Media Streaming"
+description: "Learn how to receive media in real-time from meeting agent"
+icon: "microphone"
+---
+
+## Streaming Audio from Meeting Agent in Real-Time
+
+To stream audio from the meeting agent in real-time, follow these steps:
+
+### Step 1: Use the `/join` API with `mediaStreaming` Payload
+
+When calling the `/join` API, include a `mediaStreaming` object in the payload. For the exact payload structure, refer to the [API Payload Details](http://localhost:3000/rest/sending-a-agent#param-media-streaming). This object should contain the following fields:
+
+- **`websocket`**: The WebSocket URL where the audio stream will be sent.
+- **`outFormat`**: The desired audio output format. Supported formats are:
+    - `pcm_16000` (default): 16 kHz sample rate.
+    - `pcm_48000`: 48 kHz sample rate.
+    - `pcm_12000`: 12 kHz sample rate.
+
+<Tip>
+Note: Currently, only raw audio is supported. The default format, `pcm_16000`, is widely compatible with services like transcription and large language models (LLMs).
+</Tip>
+
+### Step 2: Understand the Streaming Events
+
+Once the streaming starts, you will receive two types of events:
+
+#### 1. `agent.streaming_initiation_metadata`
+
+This event contains metadata about the stream. Example message:
+
+```json
+{
+    "event": "agent.streaming_initiation_metadata",
+    "data": {
+        "agentId": "0051c444-dd69-42da-87e7-ac89fd4d0c93",
+        "format": "S16LE",
+        "sampleRate": "pcm_16000",
+        "channels": 1
+    }
+}
+```
+
+#### 2. `agent.audio_data`
+
+This event carries the actual audio data and speaker timeline. Example message:
+
+```json
+{
+    "event": "agent.audio_data",
+    "data": {
+        "agentId": "0051c444-dd69-42da-87e7-ac89fd4d0c93",
+        "audioChunk": "<Buffer>",
+        "speakerTimeline": [
+            { "speaker": "adam", "start_timestamp": 12.345, "end_timestamp": 44.421 }
+        ]
+    }
+}
+```
+
+- **`audioChunk`**: Contains the audio data as a buffer.
+- **`speakerTimeline`**: Provides speaker attribution. If no one is in the meeting, this will be an empty array. If there are no active speakers, the `audioChunk` will contain silence.
+
+### Additional Notes
+
+- The `speakerTimeline` can be used for speaker attribution.
+- Ensure the WebSocket connection is properly established to receive the audio stream.
+
+By following these steps, you can successfully stream audio from the meeting agent in real-time.
