@@ -12,8 +12,11 @@ To stream audio from the meeting agent in real-time, follow these steps:
 
 When calling the `/join` API, include a `mediaStreaming` object in the payload. For the exact payload structure and field details, refer to the [API Payload Details](../rest/sending-a-agent#param-media-streaming).
 
+- **Supported formats:** Raw PCM only  
+- **Sample rates:** `16000` (default), `24000`, `48000`
+
 <Tip>
-Note: Currently, only raw audio is supported. The default format, `pcm_16000`, is widely compatible with services like transcription and large language models (LLMs).
+Note: The default format `pcm_16000` is widely compatible with transcription services and LLMs.
 </Tip>
 
 ### Step 2: Understand the Streaming Events
