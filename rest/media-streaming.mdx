@@ -60,7 +60,7 @@ This event carries the actual audio data and speaker timeline. Example message:
 ```
 
 - **`audioChunk`**: Contains the audio data as a buffer.
-- **`speakerTimeline`**: Provides speaker attribution. If no one is in the meeting, this will be an empty array. If there are no active speakers, the `audioChunk` will contain silence.
+- **`speakerTimeline`**: Provides speaker attribution, detailing who is speaking and when. If no participants are in the meeting or no one is speaking initially, this will be an empty array. During periods of silence, the `audioChunk` will contain silent audio data.
 
 ### Additional Notes
 
