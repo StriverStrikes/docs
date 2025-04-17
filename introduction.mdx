@@ -27,8 +27,8 @@ Agents maintain access to:
 
 ## Video and Audio Recording
 Meeting agents automatically generate **recordings** during calls.  
-You can retrieve the recording URL by fetching the agent using the **Retrieve Agent** API.  
-The `videoUrl` field contains a **pre-signed URL**, allowing you to stream or download the recording.
+You can retrieve the recording URL by fetching the meeting using the **Retrieve Meeting Data** API.  
+The `recording url` field contains a **pre-signed URL**, allowing you to stream or download the recording.
 
 ## Transcription
 
@@ -39,8 +39,8 @@ You can generate transcripts in two ways:
 
 Here's a comparison to help you choose the best option:
 
-| **Feature**          | **Platform Captions**                       | **AI Transcription**                      |
-|-----------------------|------------------------------------------|-----------------------------------------|
+| **Feature**           | **Platform Captions** (Beta)              | **AI Transcription**                    |
+|-----------------------|------------------------------------------ |-----------------------------------------|
 | **Source**            | Meeting platform's closed captions        | Third-party AI transcription service    |
 | **Accuracy**          | Platform-dependent, may vary              | Higher accuracy with advanced NLP models |
 | **Per-Word Timestamp**| Not available                             | Available                               |

@@ -10,7 +10,7 @@ You can dispatch an agent to a meeting either:
     1. Immediately, provided there are available agents in your pool.
     2. With a reservation, scheduling an agent to join 5 minutes before a meeting.
 
-To send an agent to a meeting, use the following example POST request to https://your-company-domain/api/v1/agent/join
+To send an agent to a meeting, use the following example POST request to http://your-hosted-ip/api/v1/agent/join
 
 <Tip>
 Note: The response will include an Agent ID. Be sure to save this ID
@@ -21,23 +21,26 @@ for use in further steps.
   <Tab label="cURL" title="Bash">
 
   ```bash
-  curl --location 'http://your-company-domain/api/v1/agent/join' \
-  --header 'Authorization: Token ${YOUR_API_KEY}' \
-  --header 'Content-Type: application/json' \
-  --data '{
-      "meetingUrl": "YOUR-MEETING-URL",
-      "agentName": "Agent X",
-      "adhoc": false,
-      "metadata": {
-          "clientId": 123
-      },
-      "automaticLeave": {
-          "EveryoneLeftTimeout": 2,
-          "NoOneJoinedTimeout": 900,
-          "WaitingRoomTimeout": 900
-      },
-      "webhookUrl": "https://your-company-domain/bot/events"
-  }
+curl --location 'http://your-hosted-ip/api/v1/agent/join' \
+--header 'Authorization: Token YOUR-API-KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "meetingUrl": "YOUR-MEETING-URL",
+    "agentName": "Agent X",
+    "adhoc": false,
+    "automaticLeave": {
+        "EveryoneLeftTimeout": 2,
+        "NoOneJoinedTimeout": 900,
+        "WaitingRoomTimeout": 900
+    },
+    "webhookUrl": "YOUR-WEBHOOK-URL",
+    "agentVideoOutput": {
+        "base64Data": "/9j/4AAQSkZJRgABAQAAAQABAAD...."
+    },
+    "transcriptionProvider": {
+        "name": "meeting_captions"
+    }
+}'
   ```
 
   </Tab>
@@ -45,36 +48,34 @@ for use in further steps.
   <Tab label="JavaScript" title="JavaScript">
 
   ```javascript
-  const myHeaders = new Headers();
-  myHeaders.append("Authorization", `Token ${YOUR_API_KEY}`);
-  myHeaders.append("Content-Type", "application/json");
-
-  const raw = JSON.stringify({
-    "meetingUrl": "YOUR-MEETING-URL",
-    "agentName": "Agent X",
-    "adhoc": false,
-    "metadata": {
-      "clientId": 123
+  fetch("http://your-hosted-ip/api/v1/agent/join", {
+  method: "POST",
+  headers: {
+    "Authorization": "Token YOUR-API-KEY",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    meetingUrl: "YOUR-MEETING-URL",
+    agentName: "Agent X",
+    adhoc: false,
+    automaticLeave: {
+      EveryoneLeftTimeout: 2,
+      NoOneJoinedTimeout: 900,
+      WaitingRoomTimeout: 900
     },
-    "automaticLeave": {
-      "EveryoneLeftTimeout": 2,
-      "NoOneJoinedTimeout": 900,
-      "WaitingRoomTimeout": 900
+    webhookUrl: "YOUR-WEBHOOK-URL",
+    agentVideoOutput: {
+      base64Data: "/9j/4AAQSkZJRgABAQAAAQABAAD...."
     },
-    "webhookUrl": "https://your-company-domain/bot/events"
-  });
+    transcriptionProvider: {
+      name: "meeting_captions"
+    }
+  })
+})
+  .then(res => res.text())
+  .then(console.log)
+  .catch(console.error);
 
-  const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow"
-  };
-
-  fetch("http://your-company-domain/api/v1/agent/join", requestOptions)
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
   ```
 
   </Tab>
@@ -82,33 +83,37 @@ for use in further steps.
   <Tab label="Python" title="Python">
 
   ```python
-  import requests
-  import json
+import requests
+import json
 
-  url = "http://your-company-domain/api/v1/agent/join"
+url = "http://your-hosted-ip/api/v1/agent/join"
 
-  payload = json.dumps({
-    "meetingUrl": "YOUR-MEETING-URL",
-    "agentName": "Agent X",
-    "adhoc": False,
-    "metadata": {
-      "clientId": 123
-    },
-    "automaticLeave": {
-      "EveryoneLeftTimeout": 2,
-      "NoOneJoinedTimeout": 900,
-      "WaitingRoomTimeout": 900
-    },
-    "webhookUrl": "https://your-company-domain/bot/events"
-  })
-  headers = {
-    'Authorization': 'Token ${YOUR_API_KEY}',
-    'Content-Type': 'application/json'
+payload = json.dumps({
+  "meetingUrl": "YOUR-MEETING-URL",
+  "agentName": "Agent X",
+  "adhoc": False,
+  "automaticLeave": {
+    "EveryoneLeftTimeout": 2,
+    "NoOneJoinedTimeout": 900,
+    "WaitingRoomTimeout": 900
+  },
+  "webhookUrl": "YOUR-WEBHOOK-URL",
+  "agentVideoOutput": {
+    "base64Data": "/9j/4AAQSkZJRgABAQAAAQABAAD...."
+  },
+  "transcriptionProvider": {
+    "name": "meeting_captions"
   }
+})
+headers = {
+  'Authorization': 'Token YOUR-API-KEY',
+  'Content-Type': 'application/json'
+}
 
-  response = requests.request("POST", url, headers=headers, data=payload)
+response = requests.request("POST", url, headers=headers, data=payload)
 
-  print(response.text)
+print(response.text)
+
   ```
 
   </Tab>
@@ -178,6 +183,8 @@ for use in further steps.
   **Optional**: Yes
   **Requirements**:
   - Must provide either `url` OR `base64Data` (but not both)
+  - The image should be in jpeg format.
+  - The image should have a 16:9 aspect ratio
   - Most platforms support resolutions up to 1020x720. Higher-resolution images are automatically scaled down.
 
   **Properties**:

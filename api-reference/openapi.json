@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://your-company-domain/api/v1"
+      "url": "https://your-hosted-ip/api/v1"
     }
   ],
   "security": [
@@ -465,10 +465,6 @@
                 "type": "string",
                 "description": "Meeting platform (e.g. GMEET)"
               },
-              "entryMessage": {
-                "type": "string",
-                "description": "Message sent when agent joins meeting"
-              },
               "transcriptionProvider": {
                 "type": "object",
                 "properties": {
@@ -507,6 +503,10 @@
                 "name": {
                   "type": "string",
                   "description": "Name of participant"
+                },
+                "meetingRole": {
+                  "type": "string",
+                  "description": "Role of participant in the meeting"
                 }
               }
             }
