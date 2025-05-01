@@ -8,7 +8,7 @@ icon: "microphone"
 
 To stream audio from the meeting agent in real-time, follow these steps:
 
-### Step 1: Use the `/join` API with `mediaStreaming` Payload
+### 1. Use the `/join` API with `mediaStreaming` Payload
 
 When calling the `/join` API, include the WebSocket URL in the `mediaStreaming` object of the payload. For detailed payload structure and field descriptions, see [API Payload Details](../rest/sending-a-agent#param-media-streaming).
 
@@ -20,7 +20,7 @@ When calling the `/join` API, include the WebSocket URL in the `mediaStreaming` 
 - **Sample Rates:** `16000` (default), `24000`, `48000`  
     - The default format, `pcm_16000`, ensures broad compatibility with transcription services and LLMs.
 
-### Step 2: Understanding the Streaming Protocol
+### 2: Understanding the Streaming Protocol
 
 Once the streaming starts, you will receive three types of events:
 
@@ -77,7 +77,7 @@ This event contains the speaker timeline updates. Example message:
 
 - **`speakerTimeline`**: Provides speaker attribution, detailing a complete timeline in form of an array who is speaking and when.
 
-#### Example Implementation
+#### 3. Example Implementation
 
 - Here's a complete Node.js WebSocket server example to handle these events:
 
@@ -114,7 +114,7 @@ wss.on('connection', (socket) => {
 });
 ```
 
-#### Playback Verification
+#### 4. Playback Verification
 To verify the received audio quality, use FFmpeg's `ffplay`:
 
 ```bash
