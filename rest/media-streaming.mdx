@@ -40,7 +40,7 @@ This event contains metadata about the stream. Example message:
 }
 ```
 
-#### 2. `Audio Data`
+#### `Audio Data`
 
 This event carries the actual audio data. Example message:
 
@@ -57,7 +57,7 @@ This event carries the actual audio data. Example message:
 - **`audioChunk`**: Contains the audio data as a buffer.
 - During periods of silence, the audioChunk will contain silent audio data.
 
-#### 3. `Speaker Timeline Updates`
+#### `Speaker Timeline Updates`
 
 This event contains the speaker timeline updates. Example message:
 
@@ -120,6 +120,8 @@ To verify the received audio quality, use FFmpeg's `ffplay`:
 ```bash
 ffplay -f s16le -ar 16000 -ac 1 output.raw
 ```
+
+(Replace 16000 with your actual sample rate if different)
 
 ### 5. Additional Notes
 
