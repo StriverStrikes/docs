@@ -114,6 +114,12 @@ wss.on('connection', (socket) => {
 });
 ```
 
+#### Playback Verification
+To verify the received audio quality, use FFmpeg's `ffplay`:
+
+```bash
+ffplay -f s16le -ar 16000 -ac 1 output.raw
+
 ### Additional Notes
 
 - The `speakerTimeline` can be used for speaker attribution.
