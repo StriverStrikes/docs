@@ -10,26 +10,27 @@ To stream audio from the meeting agent in real-time, follow these steps:
 
 ### Step 1: Use the `/join` API with `mediaStreaming` Payload
 
-When calling the `/join` API, include a `mediaStreaming` object in the payload. For the exact payload structure and field details, refer to the [API Payload Details](../rest/sending-a-agent#param-media-streaming).
-
-- **Supported formats:** Raw PCM only  
-- **Sample rates:** `16000` (default), `24000`, `48000`
+When calling the `/join` API, include the WebSocket URL in the `mediaStreaming` object of the payload. For detailed payload structure and field descriptions, see [API Payload Details](../rest/sending-a-agent#param-media-streaming).
 
 <Tip>
-Note: The default format `pcm_16000` is widely compatible with transcription services and LLMs.
+**Tip:** Use a WebSocket URL with a `ws://` or `wss://` prefix based on your server's configuration. We recommend `wss://` for secure, encrypted connections.
 </Tip>
+
+- **Supported Formats:** Raw PCM  
+- **Sample Rates:** `16000` (default), `24000`, `48000`  
+    - The default format, `pcm_16000`, ensures broad compatibility with transcription services and LLMs.
 
 ### Step 2: Understand the Streaming Events
 
 Once the streaming starts, you will receive two types of events:
 
-#### 1. `agent.streaming_initiation_metadata`
+#### 1. `streaming_initiation_metadata`
 
 This event contains metadata about the stream. Example message:
 
 ```json
 {
-    "event": "agent.streaming_initiation_metadata",
+    "type": "streaming_initiation_metadata",
     "data": {
         "agentId": "0051c444-dd69-42da-87e7-ac89fd4d0c93",
         "format": "S16LE",
@@ -39,25 +40,42 @@ This event contains metadata about the stream. Example message:
 }
 ```
 
-#### 2. `agent.audio_data`
+#### 2. `audio`
 
-This event carries the actual audio data and speaker timeline. Example message:
+This event carries the actual audio data. Example message:
 
 ```json
 {
-    "event": "agent.audio_data",
+    "type": "audio",
     "data": {
         "agentId": "0051c444-dd69-42da-87e7-ac89fd4d0c93",
         "audioChunk": "<Buffer>",
-        "speakerTimeline": [
-            { "speaker": "adam", "start_timestamp": 12.345, "end_timestamp": 44.421 }
-        ]
     }
 }
 ```
 
 - **`audioChunk`**: Contains the audio data as a buffer.
-- **`speakerTimeline`**: Provides speaker attribution, detailing who is speaking and when. If no participants are in the meeting or no one is speaking initially, this will be an empty array. During periods of silence, the `audioChunk` will contain silent audio data.
+- During periods of silence, the audioChunk will contain silent audio data.
+
+#### 3. speaker_timeline_update
+
+This event contains the speaker timeline updates
+
+```json
+{
+    "type": "speaker_timeline_update",
+    "data": {
+        "agentId": "0051c444-dd69-42da-87e7-ac89fd4d0c93",
+        "speakerTimeline": [
+            { "speaker": "adam", "start_timestamp": 12.345, "end_timestamp": 44.421 },
+            { "speaker": "jason", "start_timestamp": 44.421, "end_timestamp": 46.421 },
+            ....
+        ]
+    }
+}
+```
+
+- **`speakerTimeline`**: Provides speaker attribution, detailing a complete timeline in form of an array who is speaking and when.
 
 ### Additional Notes
 
