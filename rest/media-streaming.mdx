@@ -20,11 +20,11 @@ When calling the `/join` API, include the WebSocket URL in the `mediaStreaming` 
 - **Sample Rates:** `16000` (default), `24000`, `48000`  
     - The default format, `pcm_16000`, ensures broad compatibility with transcription services and LLMs.
 
-### Step 2: Understand the Streaming Events
+### Step 2: Understanding the Streaming Protocol
 
-Once the streaming starts, you will receive two types of events:
+Once the streaming starts, you will receive three types of events:
 
-#### 1. `streaming_initiation_metadata`
+#### 1. `Streaming Initialization`
 
 This event contains metadata about the stream. Example message:
 
@@ -40,7 +40,7 @@ This event contains metadata about the stream. Example message:
 }
 ```
 
-#### 2. `audio`
+#### 2. `Audio Data`
 
 This event carries the actual audio data. Example message:
 
@@ -57,7 +57,7 @@ This event carries the actual audio data. Example message:
 - **`audioChunk`**: Contains the audio data as a buffer.
 - During periods of silence, the audioChunk will contain silent audio data.
 
-#### 3. speaker_timeline_update
+#### 3. `Speaker Timeline Updates`
 
 This event contains the speaker timeline updates
 
@@ -76,6 +76,43 @@ This event contains the speaker timeline updates
 ```
 
 - **`speakerTimeline`**: Provides speaker attribution, detailing a complete timeline in form of an array who is speaking and when.
+
+#### Example Implementation
+
+- Here's a complete Node.js WebSocket server example to handle these events:
+
+```javascript
+const WebSocket = require('ws');
+const fs = require('fs');
+
+const WebSocketServer = WebSocket.Server;
+const wss = new WebSocketServer({ port: 8080 });
+
+console.log('WebSocket server is running on ws://localhost:8080');
+
+const file = fs.createWriteStream(__dirname + '/output.raw');
+wss.on('connection', (socket) => {
+  console.log('Client connected');
+
+  socket.on('message', (message) => {
+    const event = JSON.parse(message);
+
+    if (event.type === 'audio') {
+      file.write(Buffer.from(event.data.audioChunk));
+    } else if (event.type === 'speaker_timeline_update') {
+      console.log(event.data.speakerTimeline);
+    }
+  });
+
+  socket.on('close', () => {
+    console.log('Client disconnected');
+  });
+
+  socket.on('error', (error) => {
+    console.error('WebSocket error:', error);
+  });
+});
+```
 
 ### Additional Notes
 
