@@ -30,7 +30,7 @@ This event contains metadata about the stream. Example message:
 
 ```json
 {
-    "type": "streaming_initiation_metadata",
+    "event": "agent.streaming_initiation_metadata",
     "data": {
         "agentId": "0051c444-dd69-42da-87e7-ac89fd4d0c93",
         "format": "S16LE",
@@ -46,7 +46,7 @@ This event carries the actual audio data. Example message:
 
 ```json
 {
-    "type": "audio",
+    "event": "agent.audio_data",
     "data": {
         "agentId": "0051c444-dd69-42da-87e7-ac89fd4d0c93",
         "audioChunk": "<Buffer>",
@@ -63,7 +63,7 @@ This event contains the speaker timeline updates. Example message:
 
 ```json
 {
-    "type": "speaker_timeline_update",
+    "event": "agent.speaker_timeline_update",
     "data": {
         "agentId": "0051c444-dd69-42da-87e7-ac89fd4d0c93",
         "speakerTimeline": [
@@ -95,12 +95,12 @@ wss.on('connection', (socket) => {
   console.log('Client connected');
 
   socket.on('message', (message) => {
-    const event = JSON.parse(message);
+    const json = JSON.parse(message);
 
-    if (event.type === 'audio') {
-      file.write(Buffer.from(event.data.audioChunk));
-    } else if (event.type === 'speaker_timeline_update') {
-      console.log(event.data.speakerTimeline);
+    if (json.event === 'agent.audio_data') {
+      file.write(Buffer.from(json.data.audioChunk));
+    } else if (json.event === 'agent.speaker_timeline_update') {
+      console.log(json.data.speakerTimeline);
     }
   });
 
