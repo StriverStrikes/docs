@@ -217,6 +217,13 @@ print(response.text)
   - **quality**: Optional - `"high"` or `"low"`
 </ResponseField>
 
+<ResponseField name="deduplicationKey" type="string" optional>
+  **Description**: A unique identifier to prevent duplicate agents from joining the same meeting.  
+  **Optional**: Yes  
+  **Max Length**: 50 characters  
+  **Default Behavior**: Rejects multiple agents in the same meeting to avoid spamming.
+</ResponseField>
+
 ## 4. Interact During the Meeting
 While the agent is in the meeting, ensure there is meaningful interaction, such as turning on your video or speaking. This ensures the recording contains relevant content.
 
